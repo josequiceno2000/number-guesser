@@ -26,8 +26,16 @@ def welcome():
 
     # print(f"\nPssst, the correct number is {chosen_number} (just for testing purposes).")
 
+    return (user_attempts, chosen_number)
+
+def guess(user_attempts: int, chosen_number: int):
+    user_guess = input("\nMake your guess:\n> ")
+    print(f"You guessed: {user_guess}" )
+
 def main():
-    welcome()
+    user_attempts, chosen_number = welcome()
+    guess(user_attempts, chosen_number)
+    
 
 if __name__ == "__main__":
     main()
