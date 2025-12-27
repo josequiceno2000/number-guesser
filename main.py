@@ -29,12 +29,36 @@ def welcome():
     return (user_attempts, chosen_number)
 
 def guess(user_attempts: int, chosen_number: int):
-    user_guess = input("\nMake your guess:\n> ")
+    # Take Guess Input
+    user_guess = int(input("\nMake your guess:\n> "))
     print(f"You guessed: {user_guess}" )
 
+    # Check Guess
+    if user_guess == chosen_number:
+        return (0, "Congratulations! You've guessed the correct number!")
+    elif user_guess < chosen_number:
+        return (1, "Too low.")
+    elif user_guess > chosen_number:
+        return (1, "Too high.")
+
 def main():
-    user_attempts, chosen_number = welcome()
-    guess(user_attempts, chosen_number)
+    user_attempts_remaining, chosen_number = welcome()
+
+    user_attempts = 1
+
+    while user_attempts_remaining > 0:
+        result, message = guess(user_attempts_remaining, chosen_number)
+        if result == 0:
+            print(message)
+            break   
+        else:
+            user_attempts_remaining -= 1
+            user_attempts += result
+            print(f"\n{message}")
+            if user_attempts_remaining > 0:
+                print(f"\nYou have {user_attempts_remaining} attempts remaining. Try again.")
+            else:
+                print(f"\nYou've run out of attempts. The correct number was {chosen_number}. Game over.")
     
 
 if __name__ == "__main__":
