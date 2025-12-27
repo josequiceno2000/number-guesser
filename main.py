@@ -42,23 +42,33 @@ def guess(user_attempts: int, chosen_number: int):
         return (1, "Too high.")
 
 def main():
-    user_attempts_remaining, chosen_number = welcome()
+    try_again = True
 
-    user_attempts = 1
+    while try_again:
+        user_attempts_remaining, chosen_number = welcome()
 
-    while user_attempts_remaining > 0:
-        result, message = guess(user_attempts_remaining, chosen_number)
-        if result == 0:
-            print(message)
-            break   
-        else:
-            user_attempts_remaining -= 1
-            user_attempts += result
-            print(f"\n{message}")
-            if user_attempts_remaining > 0:
-                print(f"\nYou have {user_attempts_remaining} attempts remaining. Try again.")
+        user_attempts = 1
+
+        while user_attempts_remaining > 0:
+            result, message = guess(user_attempts_remaining, chosen_number)
+            if result == 0:
+                print(message)
+                break   
             else:
-                print(f"\nYou've run out of attempts. The correct number was {chosen_number}. Game over.")
+                user_attempts_remaining -= 1
+                user_attempts += result
+                print(f"\n{message}")
+                if user_attempts_remaining > 0:
+                    print(f"\nYou have {user_attempts_remaining} attempts remaining. Try again.")
+                else:
+                    print(f"\nYou've run out of attempts. The correct number was {chosen_number}. Game over.")
+        
+        play_again = input("\nDo you want to play again? Type 'y' for YES or 'n' for NO:\n> ").lower()
+        if play_again == 'y':
+            continue
+        else:
+            print("\nThank you for playing! Goodbye.")
+            try_again = False
     
 
 if __name__ == "__main__":
