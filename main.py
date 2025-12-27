@@ -43,6 +43,19 @@ def guess(user_attempts: int, chosen_number: int):
     elif user_guess > chosen_number:
         return (1, "Too high.")
 
+def get_hint(chosen_number: int):
+    hints = []
+    if chosen_number % 2 == 0:
+        hints.append("The number is even.")
+    else:
+        hints.append("The number is odd.")
+
+    
+    for i in range(3, 11):
+        if chosen_number % i == 0:
+            hints.append(f"The number is divisible by {i}.")
+
+    return random.choice(hints)
 
 def main():
     try_again = True
@@ -55,6 +68,14 @@ def main():
         start_time = time.time()    
 
         while user_attempts_remaining > 0:
+            if user_attempts == 3:
+                user_get_hint_choice = input("\nWould you like a hint? Type 'h' for YES or any other key for NO:\n> ").lower()
+                if user_get_hint_choice == 'h':
+                    hint = get_hint(chosen_number)
+                    print(f"\n[HINT]: {hint}")
+                else:
+                    print("\nAlrighty. Continue guessing.")
+
             result, message = guess(user_attempts_remaining, chosen_number)
             if result == 0:
                 print(message)
