@@ -1,4 +1,6 @@
 import random
+import time
+import sys
 
 user_attempts = None
 
@@ -41,6 +43,7 @@ def guess(user_attempts: int, chosen_number: int):
     elif user_guess > chosen_number:
         return (1, "Too high.")
 
+
 def main():
     try_again = True
 
@@ -48,6 +51,8 @@ def main():
         user_attempts_remaining, chosen_number = welcome()
 
         user_attempts = 1
+
+        start_time = time.time()    
 
         while user_attempts_remaining > 0:
             result, message = guess(user_attempts_remaining, chosen_number)
@@ -62,6 +67,11 @@ def main():
                     print(f"\nYou have {user_attempts_remaining} attempts remaining. Try again.")
                 else:
                     print(f"\nYou've run out of attempts. The correct number was {chosen_number}. Game over.")
+        
+        end_time = time.time()
+        total_time = end_time - start_time
+        print(f"\nYou made {user_attempts} attempts.")
+        print(f"Total time taken: {total_time:.2f} seconds.")
         
         play_again = input("\nDo you want to play again? Type 'y' for YES or 'n' for NO:\n> ").lower()
         if play_again == 'y':
