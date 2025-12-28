@@ -1,8 +1,29 @@
 import random
 import time
-import sys
+import json
+import os
 
-user_attempts = None
+# High Score File
+HS_FILE = "high_scores.json"
+
+def load_high_scores():
+    if os.path.exists(HS_FILE):
+        try:
+            with open(HS_FILE, "r") as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            pass
+
+    # Default high scores
+    return {
+        "EASY": None,
+        "MEDIUM": None,
+        "HARD": None
+    }
+
+def save_high_scores(high_scores):
+    with open(HS_FILE, "w") as file:
+        json.dump(high_scores, file, indent=4)
 
 def welcome():
     # Number Selection
@@ -12,8 +33,17 @@ def welcome():
     print("Welcome to the number guessing game!")
     print("Try to guess the number I'm thinking of [between 1 and 100].")
 
+    # High Score Display
+    high_scores = load_high_scores()
+    print("\nCurrent High Scores:")
+    for diff, score in high_scores.items():
+        if score:
+            print(f" {diff}: {score['attempts']} attempts in {score['time']:.2f} seconds")
+        else:
+            print(f" {diff}: No high score yet.")
+
     # Difficulty Selection
-    difficulty_selection = input("\nChoose a difficulty. \nType '1' for EASY\nType '2' for MEDIUM\nType '3' for HARD:\n> ").lower()
+    difficulty_selection = input("\nChoose a difficulty. \n1: EASY\n2: MEDIUM\n3: HARD\n> ").lower()
     if difficulty_selection == '1':
         difficulty = 'EASY'
     elif difficulty_selection == '2':
@@ -28,7 +58,7 @@ def welcome():
 
     # print(f"\nPssst, the correct number is {chosen_number} (just for testing purposes).")
 
-    return (user_attempts, chosen_number)
+    return (user_attempts, difficulty, chosen_number)
 
 def guess(user_attempts: int, chosen_number: int):
     # Take Guess Input
@@ -45,12 +75,14 @@ def guess(user_attempts: int, chosen_number: int):
 
 def get_hint(chosen_number: int):
     hints = []
+
+    # Even or Odd Hint
     if chosen_number % 2 == 0:
         hints.append("The number is even.")
     else:
         hints.append("The number is odd.")
 
-    
+    # Divisibility Hints
     for i in range(3, 11):
         if chosen_number % i == 0:
             hints.append(f"The number is divisible by {i}.")
@@ -61,7 +93,7 @@ def main():
     try_again = True
 
     while try_again:
-        user_attempts_remaining, chosen_number = welcome()
+        user_attempts_remaining, difficulty, chosen_number = welcome()
 
         user_attempts = 1
 
@@ -93,6 +125,30 @@ def main():
         total_time = end_time - start_time
         print(f"\nYou made {user_attempts} attempts.")
         print(f"Total time taken: {total_time:.2f} seconds.")
+
+        # High Score Update
+        if result == 0:
+            high_scores = load_high_scores()
+            current_record = high_scores.get(difficulty)
+
+            is_new_high = False
+            if current_record is None:
+                is_new_high = True
+            elif user_attempts < current_record['attempts']:
+                is_new_high = True
+            elif user_attempts == current_record['attempts'] and total_time < current_record['time']:
+                is_new_high = True
+            
+            if is_new_high:
+                print(f"🎉 New High Score for {difficulty}!")
+                high_scores[difficulty] = {
+                    "attempts": user_attempts,
+                    "time": total_time
+                }
+                save_high_scores(high_scores)
+
+
+        
         
         play_again = input("\nDo you want to play again? Type 'y' for YES or 'n' for NO:\n> ").lower()
         if play_again == 'y':
